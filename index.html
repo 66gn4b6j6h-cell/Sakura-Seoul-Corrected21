@@ -1476,4 +1476,52 @@ window.renderSeoulHotel23=function(){
 };
 })();
 </script>
+
+<style id="v23-japan-home-fix">
+.v23-jhero{position:relative;height:215px;border-radius:0;overflow:hidden;margin:-4px -2px 12px;background:#e9f2fb}.v23-jhero img{width:100%;height:100%;object-fit:cover;display:block}.v23-jhero .phrase-cover{position:absolute;right:13.5%;top:22%;width:17%;height:46%;background:linear-gradient(135deg,#dcebf8 0%,#e9eef7 60%,#f4e8ef 100%);border-radius:12px;opacity:.98}.v23-route{display:grid;grid-template-columns:1fr .28fr 1fr .28fr 1.3fr .28fr 1fr 1.25fr;align-items:center;background:#fff;border-radius:18px;padding:12px 8px;margin:0 0 12px;box-shadow:var(--shadow);gap:2px}.v23-stop{text-align:center;font-size:10px;line-height:1.2;color:#5c5960}.v23-stop .ico{font-size:21px;display:block;margin-bottom:4px}.v23-stop b{display:block;font-size:12px;color:#222;margin-bottom:2px}.v23-arrow{text-align:center;color:#6e6b72;font-size:17px}.v23-daytrip{border-left:1px solid #eee;padding-left:7px}.v23-topgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}.v23-info{border:1px solid #f0e4e7;background:linear-gradient(145deg,#fff,#fff9fa);border-radius:18px;padding:14px;box-shadow:0 7px 20px rgba(55,40,45,.06);min-height:215px;text-align:left}.v23-info h3{font:700 19px Georgia,serif;margin:0 0 4px}.v23-info .meta{font-size:10px;color:#67616a;float:right}.v23-timeline{margin-top:12px;display:grid;gap:9px}.v23-trow{display:grid;grid-template-columns:10px 58px 1fr;gap:7px;align-items:start;font-size:10px;line-height:1.3}.v23-dot{width:7px;height:7px;border:2px solid #df3b70;border-radius:50%;margin-top:2px}.v23-weather-main{display:flex;gap:9px;align-items:center;margin:12px 0}.v23-sun{font-size:37px}.v23-temp{font:700 29px Georgia,serif}.v23-safe{background:#edf8f1;border-radius:12px;padding:9px;font-size:9px;line-height:1.35;margin-top:8px}.v23-next{display:flex;align-items:center;gap:10px;border:1px solid #f2ccd5;background:linear-gradient(90deg,#fff2f5,#fbe9ef);border-radius:16px;padding:12px 14px;margin:10px 0 12px;font-size:11px;line-height:1.35}.v23-next .mount{font-size:25px}.v23-next b{color:#d82d65}.v23-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.v23-tile{border:0;background:#fff;border-radius:15px;overflow:hidden;box-shadow:var(--shadow);padding:0;text-align:left;cursor:pointer}.v23-tile .copy{padding:10px 10px 8px;min-height:72px}.v23-tile h4{font:700 13px Georgia,serif;margin:0 0 4px;color:#242128}.v23-tile p{font-size:9px;line-height:1.3;color:#625d64;margin:0}.v23-tile img{display:block;width:100%;aspect-ratio:1.52/1;object-fit:cover}.v23-tools{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 8px}.v23-tools button{border:0;background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:10px 3px;min-height:62px;font:inherit;font-size:10px;color:#46424a}.v23-tools span{font-size:20px;display:block;margin-bottom:4px}
+@media(max-width:520px){.v23-jhero{height:205px}.v23-route{padding:10px 5px}.v23-stop b{font-size:11px}.v23-stop{font-size:9px}.v23-topgrid{gap:8px}.v23-info{padding:12px;min-height:205px}.v23-info h3{font-size:17px}.v23-grid{gap:7px}.v23-tile .copy{padding:8px;min-height:68px}.v23-tile h4{font-size:12px}.v23-tile p{font-size:8.5px}}
+</style>
+<script id="v23-japan-home-fix">
+(function(){
+ const JP=[
+ ['japan-itinerary-v22.png','Itinerary & Cities','View, edit and explore your Japan plans','today'],
+ ['japan-weather-v22.png','Weather','Planning climate & city-specific weather access','packing/weather'],
+ ['japan-safety-v22.png','Safety & Disaster','Official alerts, emergency contacts & what to do','practical/emergency'],
+ ['japan-transport-v22.png','Transport','Trains, IC cards and local transport','practical/transit'],
+ ['japan-food-v22.png','Food','Restaurants, cafés & vegetarian/egg status','food?country=Japan'],
+ ['japan-shopping-v22.png','Shopping','Stores, tax-free notes & wish list','shopping?country=Japan'],
+ ['japan-bookings-v22.png','Bookings','Tickets, reservations & confirmations','bookings'],
+ ['japan-wallet-v22.png','Japan Cash & Expenses','Track yen, spending and budget','wallet?country=Japan'],
+ ['japan-info-v22.png','Useful Info','SIM, maps, etiquette, translation & more','localguide?country=Japan']
+ ];
+ function tile(x){return `<button class="v23-tile" onclick="go('${x[3]}')"><div class="copy"><h4>${x[1]} ›</h4><p>${x[2]}</p></div><img src="${x[0]}" alt=""></button>`}
+ window.renderJapanHub=function(){
+  setHeader('Japan · Oct 7–21');
+  $('#view').innerHTML=`
+   <div class="v23-jhero"><img src="japan-hero-v22.png" alt="Japan · Oct 7–21, 2026"><span class="phrase-cover" aria-hidden="true"></span></div>
+   <div class="v23-route">
+    <div class="v23-stop"><span class="ico">🐙</span><b>Osaka</b>Oct 7–10</div><div class="v23-arrow">→</div>
+    <div class="v23-stop"><span class="ico">⛩️</span><b>Kyoto</b>Oct 10–12</div><div class="v23-arrow">→</div>
+    <div class="v23-stop"><span class="ico">🗻</span><b>Fuji / Fujiyoshida</b>Oct 12–14</div><div class="v23-arrow">→</div>
+    <div class="v23-stop"><span class="ico">🗼</span><b>Tokyo</b>Oct 14–21</div>
+    <div class="v23-stop v23-daytrip"><span class="ico">📍</span><b>Nara & Uji</b>Day trip · Oct 9</div>
+   </div>
+   <div class="v23-topgrid">
+    <button class="v23-info" onclick="go('today')"><span class="meta">Fri, Oct 9</span><h3>Today</h3><b>Osaka → Uji → Nara → Osaka</b><div class="v23-timeline">
+     <div class="v23-trow"><i class="v23-dot"></i><b>08:00</b><span>Leave Osaka for Uji</span></div>
+     <div class="v23-trow"><i class="v23-dot"></i><b>Morning</b><span>Byōdō-in, Uji River & matcha</span></div>
+     <div class="v23-trow"><i class="v23-dot"></i><b>~13:15</b><span>Uji → Nara · JR Nara Line</span></div>
+     <div class="v23-trow"><i class="v23-dot"></i><b>Afternoon</b><span>Nara Park & Tōdai-ji</span></div>
+    </div></button>
+    <button class="v23-info" onclick="go('packing/weather')"><span class="meta">Trip planning</span><h3>🌤️ Weather & Safety</h3><small>Japan · itinerary-aware</small><div class="v23-weather-main"><span class="v23-sun">☀️</span><div><div class="v23-temp">October</div><small>Planning climate — check live forecast near travel dates</small></div></div><div class="v23-safe">🛡️ <b>Safety hub</b><br>Weather, earthquake/tsunami guidance, emergency numbers and transport disruption links.</div></button>
+   </div>
+   <div class="v23-next"><span class="mount">🗻</span><div><b>Next stop: Fuji / Fujiyoshida · Oct 12–14</b><br>Confirmed Mishima → Kaneyamaen bus departs 13:10 on Oct 12.</div><span style="margin-left:auto">›</span></div>
+   <div class="v23-grid">${JP.map(tile).join('')}</div>
+   <section class="section"><div class="v23-tools"><button onclick="window.open('https://maps.google.com','_blank')"><span>📍</span>Maps</button><button onclick="go('language')"><span>文</span>Translate</button><button onclick="go('offline-maps')"><span>◉</span>Offline Maps</button><button onclick="go('practical/transit')"><span>💳</span>IC Card Guide</button></div></section>`;
+ };
+ /* The authoritative router calls renderJapanHub15, so bind it to the corrected renderer. */
+ window.renderJapanHub15=window.renderJapanHub;
+})();
+</script>
+
 </body></html>
