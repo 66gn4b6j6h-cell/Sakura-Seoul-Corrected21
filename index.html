@@ -1159,6 +1159,7 @@ function finalParent(route){
  const [path,qs=""]=(route||"home").split("?"), parts=path.split("/"), base=parts[0];
  if(base==="home") return "home";
  if(["japanhub","seoulhub","journey","wallet","readiness","more","essentials","packing","offline-maps","language"].includes(base)) return "home";
+ if(["seoul-today","seoul-weather","seoul-hotel"].includes(base)) return "seoulhub";
  if(base==="city") return decodeURIComponent(parts.slice(1).join("/"))==="Seoul" ? "seoulhub" : "japanhub";
  if(["konbini","matchamap"].includes(base)) return "japanhub";
  if(["food","shopping","localguide"].includes(base)){
@@ -1320,6 +1321,9 @@ render=function(){
  else if(base==="journey")renderJourney();
  else if(base==="city")renderCity(decodeURIComponent(parts.slice(1).join("/")));
  else if(base==="today")renderToday();
+ else if(base==="seoul-today")renderSeoulToday23();
+ else if(base==="seoul-weather")renderSeoulWeather23();
+ else if(base==="seoul-hotel")renderSeoulHotel23();
  else if(base==="food")renderFood();
  else if(base==="restaurant")renderRestaurant(parts[1]);
  else if(base==="favorites")renderFavorites();
@@ -1447,7 +1451,7 @@ const J=[
 ['japan-transport-v22.png','practical/transit'],['japan-food-v22.png','food?country=Japan'],['japan-shopping-v22.png','shopping?country=Japan'],
 ['japan-bookings-v22.png','bookings'],['japan-wallet-v22.png','wallet?country=Japan'],['japan-info-v22.png','localguide?country=Japan']];
 const S=[
-['seoul-today-v22.png','today?city=Seoul'],['seoul-weather-v22.png','packing/weather'],['seoul-hotel-v22.png','city/Seoul'],['seoul-itinerary-v22.png','today?city=Seoul'],['seoul-food-v22.png','food?country=South%20Korea'],['seoul-shopping-v22.png','shopping?country=South%20Korea'],['seoul-markets-v22.png','shopping?country=South%20Korea'],['seoul-currency-v22.png','wallet?country=South%20Korea'],['seoul-local-guide-v22.png','localguide?country=South%20Korea']];
+['seoul-today-v22.png','seoul-today'],['seoul-weather-v22.png','seoul-weather'],['seoul-hotel-v22.png','seoul-hotel'],['seoul-itinerary-v22.png','today?city=Seoul'],['seoul-food-v22.png','food?country=South%20Korea'],['seoul-shopping-v22.png','shopping?country=South%20Korea'],['seoul-markets-v22.png','shopping?country=South%20Korea'],['seoul-currency-v22.png','wallet?country=South%20Korea'],['seoul-local-guide-v22.png','localguide?country=South%20Korea']];
 function imgTile(x,wide){return `<button class="v22-${wide?'stile wide':'imgtile'}" onclick="go('${x[1]}')"><img src="${x[0]}" alt=""></button>`}
 renderJapanHub=function(){setHeader('Japan · Oct 7–21');$('#view').innerHTML=`
 <div class="v22-jhero"><img src="japan-hero-v22.png" alt="Japan"><span class="v22-phrase-mask" aria-hidden="true"></span></div>
@@ -1457,6 +1461,19 @@ renderJapanHub=function(){setHeader('Japan · Oct 7–21');$('#view').innerHTML=
 <div class="v22-jgrid">${J.map(x=>imgTile(x,false)).join('')}</div>
 <section class="section"><div class="section-head"><h2>Quick tools</h2></div><div class="v22-tools"><button onclick="window.open('https://maps.google.com','_blank')">🗺️<br>Maps</button><button onclick="go('language')">文<br>Translate</button><button onclick="go('offline-maps')">⬇️<br>Offline Maps</button><button onclick="go('practical/transit')">💳<br>IC Card Guide</button></div></section>`};
 renderSeoulHub=function(){setHeader('South Korea · Oct 21–25');$('#view').innerHTML=`<div class="v22-seoulhero"><img src="seoul-hero-v22.png" alt="South Korea · Seoul · Oct 21–25"></div><div class="v22-sgrid">${S.map((x,i)=>imgTile(x,i===8)).join('')}</div>`};
+window.renderSeoulToday23=function(){
+ setHeader('Seoul · Today');
+ const days=(window.FINAL_ITIN||[]).filter(d=>d.date>='2026-10-21'&&d.date<='2026-10-25');
+ $('#view').innerHTML=`<div class="page-title"><div><div class="kicker">SEOUL · OCT 21–25</div><h1>Today in Seoul</h1><p>Your Seoul-only day plan. This is separate from Hotel and Weather.</p></div></div><div class="list">${days.map(d=>`<button class="row card click" onclick="go('today?city=Seoul')"><div class="row-main"><span class="kicker">${d.label} · ${d.status}</span><b>${d.city}</b><small>${d.items.map(x=>x[0]+' · '+x[1]).join(' • ')}</small></div><span>›</span></button>`).join('')}</div>`;
+};
+window.renderSeoulWeather23=function(){
+ setHeader('Seoul · Weather');
+ $('#view').innerHTML=`<div class="page-title"><div><div class="kicker">SEOUL · OCT 21–25</div><h1>Seoul Weather</h1><p>Seoul-specific planning climate. This is not the Packing & Weather page and is not presented as a live October forecast.</p></div></div><div class="notice">Actual Oct 21–25 forecasts are only reliable close to the travel dates. This page keeps Seoul separate from Japan packing guidance.</div><section class="section"><div class="card"><span class="kicker">LATE OCTOBER PLANNING</span><h2>Cooler evenings</h2><p>Plan a sweater/light jacket and keep a warmer evening layer accessible after the Oct 21 flight.</p></div></section><section class="section"><div class="section-head"><h2>Useful for Seoul</h2></div><div class="list"><div class="row card"><div class="row-main"><b>Day layer</b><small>Comfortable walking layer for neighbourhoods and markets.</small></div></div><div class="row card"><div class="row-main"><b>Evening layer</b><small>Sweater/light jacket; add warmth if the forecast calls for it.</small></div></div><div class="row card"><div class="row-main"><b>Rain</b><small>Check the actual Seoul forecast before each day; carry a compact umbrella when needed.</small></div></div></div></section>`;
+};
+window.renderSeoulHotel23=function(){
+ setHeader('Seoul · Hotel');
+ $('#view').innerHTML=`<div class="page-title"><div><div class="kicker">SEOUL BASE · OCT 21–25</div><h1>LOTTE City Hotel Myeongdong</h1><p>Your Seoul accommodation page. Separate from Today and Weather.</p></div></div><section class="section"><div class="card"><span class="kicker">STAY</span><h2>4 nights</h2><p>Check-in Oct 21 · Check-out Oct 25.</p><div class="chips" style="margin-top:12px"><button class="chip active" onclick="go('accommodation')">Accommodation details</button><button class="chip" onclick="window.open('https://maps.google.com/?q=LOTTE+City+Hotel+Myeongdong','_blank')">Open Maps</button></div></div></section><section class="section"><div class="section-head"><h2>Use this base for</h2></div><div class="list"><div class="row card"><div class="row-main"><b>Myeongdong</b><small>Base / shopping</small></div></div><div class="row card"><div class="row-main"><b>Oct 21 arrival</b><small>ICN → hotel → easy Myeongdong evening.</small></div></div></div></section>`;
+};
 })();
 </script>
 </body></html>
