@@ -1562,4 +1562,247 @@ window.renderSeoulHotel23=function(){
 })();
 </script>
 
+
+<style id="v25-surgical-ux">
+.v25-breadcrumbs{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:2px 0 12px;font-size:11px;color:#746d68}
+.v25-breadcrumbs button{border:0;background:transparent;padding:0;color:#a15d68;font:inherit;cursor:pointer}
+.v25-locgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v25-loc{border:0;background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:15px;text-align:left;cursor:pointer;min-height:88px}
+.v25-loc b{display:block;font:700 18px Georgia,serif;color:#2e2929;margin-bottom:5px}.v25-loc small{color:#766e69;line-height:1.35}
+.v25-store{margin-bottom:10px}.v25-store-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.v25-store-head b{font:700 18px Georgia,serif}.v25-store-head small{display:block;color:#766e69;margin-top:4px}
+.v25-rec{border:1px solid #ead9cf;background:#fffaf7}.v25-rec .v25-recbadge{display:inline-block;font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:#f4e6dc;padding:5px 8px;border-radius:99px;margin-bottom:7px}
+.v25-tools{display:grid;grid-template-columns:1fr auto;gap:8px;margin:10px 0 12px}.v25-tools input{width:100%;padding:12px 13px;border:1px solid #ddd2c7;border-radius:14px;background:#fff;font:inherit}.v25-tools button{border:1px solid #ddd2c7;background:#fff;border-radius:14px;padding:0 12px;font:inherit}
+.v25-foodmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.v25-pill{font-size:10px;background:#f3eee8;border-radius:99px;padding:5px 8px}.v25-pill.good{background:#e9f4ea}.v25-pill.warn{background:#fff1df}
+.v25-guidegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v25-guidecard{border:0;background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:15px;text-align:left;cursor:pointer;min-height:120px}.v25-guidecard h3{margin:0 0 6px;font:700 18px Georgia,serif}.v25-guidecard p{font-size:11px;line-height:1.4;color:#706966;margin:0}
+.v25-links{display:grid;gap:8px;margin-top:12px}.v25-links a{display:block;text-decoration:none;background:#fff;border:1px solid #eadfd8;border-radius:14px;padding:12px;color:#4d4744;font-weight:700}
+.v25-daynav{display:flex;gap:8px;margin:10px 0 12px}.v25-daynav button{flex:1}
+@media(max-width:520px){.v25-locgrid,.v25-guidegrid{grid-template-columns:1fr 1fr}.v25-loc b,.v25-store-head b,.v25-guidecard h3{font-size:16px}}
+</style>
+<script id="v25-surgical-ux">
+(function(){
+/* V25 is deliberately limited to approved UX fixes:
+   Back history, Today, Food, Shopping, and country-specific Local Guides. */
+
+const V25_SHOP_RECS = {
+ "Japan":[
+  {city:"Osaka",area:"Namba",name:"Namba CITY",why:"Large station-connected shopping complex; useful when already around Namba.",maps:"https://www.google.com/maps/search/?api=1&query=Namba+CITY+Osaka",site:"https://nambacity.com/"},
+  {city:"Osaka",area:"Shinsaibashi",name:"Shinsaibashi-suji Shopping Street",why:"Major covered shopping street with fashion, drugstores, Daiso and specialty shops.",maps:"https://www.google.com/maps/search/?api=1&query=Shinsaibashi-suji+Shopping+Street+Osaka",site:"https://www.shinsaibashi.or.jp/"},
+  {city:"Tokyo",area:"Ginza",name:"GINZA SIX",why:"Convenient Ginza stop for Japanese and international fashion, beauty and lifestyle stores.",maps:"https://www.google.com/maps/search/?api=1&query=GINZA+SIX",site:"https://ginza6.tokyo/"},
+  {city:"Tokyo",area:"Shibuya",name:"Shibuya PARCO",why:"Popular Shibuya complex for fashion, design and character shopping.",maps:"https://www.google.com/maps/search/?api=1&query=Shibuya+PARCO",site:"https://shibuya.parco.jp/"},
+  {city:"Tokyo",area:"Shinjuku",name:"Hands Shinjuku",why:"Useful one-stop shop for stationery, travel goods, homeware and Japanese finds.",maps:"https://www.google.com/maps/search/?api=1&query=Hands+Shinjuku",site:"https://shinjuku.hands.net/"}
+ ],
+ "South Korea":[
+  {city:"Seoul",area:"Myeongdong / Euljiro",name:"Olive Young Myeongdong Town",why:"Large beauty stop in the main Myeongdong shopping area.",maps:"https://www.google.com/maps/search/?api=1&query=Olive+Young+Myeongdong+Town",site:"https://www.oliveyoung.co.kr/"},
+  {city:"Seoul",area:"Yeouido",name:"The Hyundai Seoul",why:"Major contemporary department store for Korean fashion, beauty, food and pop-ups.",maps:"https://www.google.com/maps/search/?api=1&query=The+Hyundai+Seoul",site:"https://www.ehyundai.com/"},
+  {city:"Seoul",area:"Seongsu",name:"MUSINSA STANDARD Seongsu",why:"Useful Seongsu stop for contemporary Korean basics and fashion.",maps:"https://www.google.com/maps/search/?api=1&query=MUSINSA+STANDARD+Seongsu",site:"https://www.musinsa.com/"}
+ ]
+};
+
+const V25_FOOD_RECS = {
+ "Japan":[
+  {city:"Tokyo",area:"Tokyo Station",name:"T's Tantan",diet:"Vegan",egg:"Egg-free vegan menu",why:"Plant-based ramen and tantan near a major transit hub.",maps:"https://www.google.com/maps/search/?api=1&query=T%27s+Tantan+Tokyo+Station"},
+  {city:"Tokyo",area:"Harajuku / Jingumae",name:"Vegan Bistro Jangara",diet:"Vegan",egg:"Egg-free vegan menu",why:"Fully vegan Japanese comfort food useful around Harajuku.",maps:"https://www.google.com/maps/search/?api=1&query=Vegan+Bistro+Jangara+Tokyo"},
+  {city:"Kyoto",area:"Gion",name:"Gion Soy Milk Ramen Uno Yukiko",diet:"Vegan",egg:"Egg-free vegan menu",why:"Vegan soy-milk ramen in a sightseeing-heavy Kyoto area.",maps:"https://www.google.com/maps/search/?api=1&query=Gion+Soy+Milk+Ramen+Uno+Yukiko"}
+ ],
+ "South Korea":[
+  {city:"Seoul",area:"Insadong / Jongno",name:"Osegyehyang",diet:"Vegan",egg:"Egg-free vegan menu",why:"Long-running vegan Korean restaurant useful around central palace/Insadong sightseeing.",maps:"https://www.google.com/maps/search/?api=1&query=Osegyehyang+Seoul"},
+  {city:"Seoul",area:"Gangnam",name:"Plant Cafe & Kitchen",diet:"Vegan",egg:"Egg-free vegan menu",why:"Well-known plant-based café/restaurant option when south of the river.",maps:"https://www.google.com/maps/search/?api=1&query=Plant+Cafe+Kitchen+Seoul"}
+ ]
+};
+
+/* ---------- true in-app Back ---------- */
+let v25Stack = [];
+let v25NavigatingBack = false;
+const v25OriginalGo = window.go;
+window.go = function(route){
+  const current = location.hash.slice(1)||"home";
+  if(!v25NavigatingBack && current !== route) v25Stack.push(current);
+  v25NavigatingBack = false;
+  location.hash = "#"+route;
+  if((location.hash.slice(1)||"home")===route) render();
+};
+function v25Back(){
+  let target = v25Stack.pop();
+  while(target === (location.hash.slice(1)||"home") && v25Stack.length) target=v25Stack.pop();
+  if(!target) target = finalParent(location.hash.slice(1)||"home");
+  v25NavigatingBack = true;
+  location.hash="#"+target;
+}
+const v25BaseRender = window.render;
+window.render = function(){
+  v25BaseRender();
+  const b=document.querySelector("#backBtn");
+  if(b && (location.hash.slice(1)||"home")!=="home"){
+    b.style.visibility="visible";
+    b.onclick=v25Back;
+  }
+};
+
+/* ---------- helpers ---------- */
+function v25Country(q){
+  return q.get("country")==="South Korea" ? "South Korea" : "Japan";
+}
+function v25ShopRows(country){
+  return DATA.shopping.filter(x=>country==="South Korea"?x.city==="Seoul":x.city!=="Seoul");
+}
+function v25Areas(rows){return [...new Set(rows.map(x=>x.area||x.zone||x.category||"Other").filter(Boolean))].sort()}
+function v25Card(title,sub,route){
+ return `<button class="v25-loc" onclick="go('${route}')"><b>${esc(title)}</b><small>${esc(sub||"Open")}</small></button>`;
+}
+function v25Crumbs(parts){
+ return `<div class="v25-breadcrumbs">${parts.map((x,i)=>i===parts.length-1?`<b>${esc(x[0])}</b>`:`<button onclick="go('${x[1]}')">${esc(x[0])}</button><span>›</span>`).join("")}</div>`;
+}
+function v25MapLink(name){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(name)}
+
+/* ---------- Shopping: Country → City → Area → Store ---------- */
+window.renderShopping=function(){
+ const q=queryParams(), country=v25Country(q), city=q.city||"", area=q.area||"";
+ const rows=v25ShopRows(country);
+ const root=`shopping?country=${encodeURIComponent(country)}`;
+ setHeader(country==="Japan"?"Japan shopping":"Seoul shopping");
+
+ if(!city){
+   const cities=country==="Japan"?["Osaka","Kyoto","Uji","Fuji / Kawaguchiko","Tokyo"]:["Seoul"];
+   $("#view").innerHTML=`<div class="page-title"><div><h1>${country==="Japan"?"Japan Shopping":"Seoul Shopping"}</h1><p>Choose a city or location first. Your saved stores stay separate from researched recommendations.</p></div></div>
+   <div class="v25-locgrid">${cities.map(c=>v25Card(c,`${rows.filter(x=>x.city===c || (c==="Fuji / Kawaguchiko"&&x.city?.includes("Fuji"))).length} saved entries`,`${root}&city=${encodeURIComponent(c)}`)).join("")}</div>`;
+   return;
+ }
+ const cityRows=rows.filter(x=>x.city===city || (city==="Fuji / Kawaguchiko"&&x.city?.includes("Fuji")));
+ if(!area){
+   const areas=v25Areas(cityRows);
+   const recAreas=[...new Set(V25_SHOP_RECS[country].filter(x=>x.city===city).map(x=>x.area))];
+   const all=[...new Set([...areas,...recAreas])].sort();
+   $("#view").innerHTML=`${v25Crumbs([["Shopping",root],[city,""]])}<div class="page-title"><div><h1>${esc(city)}</h1><p>Choose the area you're actually in.</p></div></div>
+   <div class="v25-locgrid">${all.map(a=>v25Card(a,`${cityRows.filter(x=>(x.area||x.zone||x.category||"Other")===a).length} saved`,`${root}&city=${encodeURIComponent(city)}&area=${encodeURIComponent(a)}`)).join("")}</div>`;
+   return;
+ }
+ const areaRows=cityRows.filter(x=>(x.area||x.zone||x.category||"Other")===area);
+ const recs=V25_SHOP_RECS[country].filter(x=>x.city===city&&x.area===area);
+ $("#view").innerHTML=`${v25Crumbs([["Shopping",root],[city,`${root}&city=${encodeURIComponent(city)}`],[area,""]])}
+ <div class="page-title"><div><h1>${esc(area)}</h1><p>Saved by us first; additional nearby recommendations are clearly separated.</p></div></div>
+ <div class="v25-tools"><input id="v25ShopSearch" placeholder="Search store or item…" oninput="v25FilterStores()"><button id="v25Unchecked" onclick="this.classList.toggle('active');v25FilterStores()">Unchecked</button></div>
+ <section class="section"><div class="section-head"><h2>Our Saved Stores</h2></div><div id="v25SavedStores">
+ ${areaRows.map(x=>{const a=shopArticles(x),prog=shopProgress(x);return `<article class="card v25-store" data-search="${esc((x.name+" "+a.join(" ")).toLowerCase())}" data-open="${prog[0]<prog[1]}"><div class="v25-store-head"><div><b>${esc(x.name)}</b><small>${esc(x.why||"Saved from our trip list.")}</small></div><span>›</span></div>${a.length?`<div class="checklist16">${a.map((v,i)=>`<label class="check16"><input type="checkbox" ${state.shoppingChecks[shopKey(x.id,i)]?"checked":""} onchange="toggleShopItem('${x.id}',${i},this.checked);renderShopping()"><span>${esc(v)}</span></label>`).join("")}</div><small>${prog[0]} / ${prog[1]} bought</small>`:""}<div class="actions" style="margin-top:10px"><button class="btn" onclick="go('shop/${x.id}')">Store details</button><button class="btn" onclick="window.open('${v25MapLink(x.name+" "+city)}','_blank')">Map</button></div></article>`}).join("")||`<div class="empty">No saved stores in this area yet.</div>`}
+ </div></section>
+ ${recs.length?`<section class="section"><div class="section-head"><h2>Recommended Nearby</h2></div>${recs.map(r=>`<article class="card v25-store v25-rec"><span class="v25-recbadge">Researched addition</span><div class="v25-store-head"><div><b>${esc(r.name)}</b><small>${esc(r.why)}</small></div></div><div class="actions" style="margin-top:10px"><button class="btn" onclick="window.open('${r.maps}','_blank')">Map</button><button class="btn" onclick="window.open('${r.site}','_blank')">Official site</button></div></article>`).join("")}</section>`:""}`;
+};
+window.v25FilterStores=function(){
+ const s=(document.querySelector("#v25ShopSearch")?.value||"").toLowerCase(), unchecked=document.querySelector("#v25Unchecked")?.classList.contains("active");
+ document.querySelectorAll("#v25SavedStores [data-search]").forEach(el=>el.style.display=((!s||el.dataset.search.includes(s))&&(!unchecked||el.dataset.open==="true"))?"":"none");
+};
+
+/* ---------- Food: Country → City → Area → Place ---------- */
+window.renderFood=function(){
+ const q=queryParams(), country=v25Country(q), city=q.city||"", area=q.area||"";
+ const all=DATA.restaurants.filter(r=>r.country===country);
+ const root=`food?country=${encodeURIComponent(country)}`;
+ setHeader(country==="Japan"?"Japan food":"Seoul food");
+ if(!city){
+   const cities=country==="Japan"?["Osaka","Kyoto","Uji","Fuji / Kawaguchiko","Tokyo"]:["Seoul"];
+   $("#view").innerHTML=`<div class="page-title"><div><h1>${country==="Japan"?"Japan Food":"Seoul Food"}</h1><p>Choose where you are first; dietary filters remain available inside each area.</p></div></div><div class="v25-locgrid">${cities.map(c=>v25Card(c,`${all.filter(r=>r.city===c || (c==="Fuji / Kawaguchiko"&&r.city?.includes("Fuji"))).length} saved places`,`${root}&city=${encodeURIComponent(c)}`)).join("")}</div>`;
+   return;
+ }
+ const cityRows=all.filter(r=>r.city===city || (city==="Fuji / Kawaguchiko"&&r.city?.includes("Fuji")));
+ if(!area){
+   const areas=[...new Set(cityRows.map(r=>r.zone||"Other").concat(V25_FOOD_RECS[country].filter(r=>r.city===city).map(r=>r.area)))].sort();
+   $("#view").innerHTML=`${v25Crumbs([["Food",root],[city,""]])}<div class="page-title"><div><h1>${esc(city)}</h1><p>Choose an area to avoid scrolling through the whole country.</p></div></div><div class="v25-locgrid">${areas.map(a=>v25Card(a,`${cityRows.filter(r=>(r.zone||"Other")===a).length} saved`,`${root}&city=${encodeURIComponent(city)}&area=${encodeURIComponent(a)}`)).join("")}</div>`;
+   return;
+ }
+ const rows=cityRows.filter(r=>(r.zone||"Other")===area), recs=V25_FOOD_RECS[country].filter(r=>r.city===city&&r.area===area);
+ $("#view").innerHTML=`${v25Crumbs([["Food",root],[city,`${root}&city=${encodeURIComponent(city)}`],[area,""]])}
+ <div class="page-title"><div><h1>${esc(area)}</h1><p>Vegetarian and egg status stays visible without opening every card.</p></div></div>
+ <div class="chips"><button class="chip" data-v25diet="vegan" onclick="this.classList.toggle('active');v25FoodFilter()">Vegan</button><button class="chip" data-v25diet="eggfree" onclick="this.classList.toggle('active');v25FoodFilter()">Egg-free</button><button class="chip" data-v25diet="cafe" onclick="this.classList.toggle('active');v25FoodFilter()">Café</button></div>
+ <div class="v25-tools"><input id="v25FoodSearch" placeholder="Search restaurant or dish…" oninput="v25FoodFilter()"><button onclick="document.querySelectorAll('[data-v25diet]').forEach(x=>x.classList.remove('active'));document.querySelector('#v25FoodSearch').value='';v25FoodFilter()">Clear</button></div>
+ <section class="section"><div class="section-head"><h2>Our Saved Places</h2></div><div id="v25FoodRows">${rows.map(r=>`<article class="card v25-store" data-food="${esc(JSON.stringify(r).toLowerCase())}" data-vegan="${String(r.vegan).toLowerCase().includes("yes")}" data-eggfree="${String(r.egg).toLowerCase().includes("no")||String(r.egg).toLowerCase().includes("n/a")}" data-cafe="${String(r.category).toLowerCase().includes("coffee")||String(r.category).toLowerCase().includes("cafe")}"><div class="v25-store-head"><div><b>${esc(r.name)}</b><small>${esc(r.mustTry||r.why||"Saved place")}</small></div><span>›</span></div><div class="v25-foodmeta"><span class="v25-pill good">Vegetarian: ${esc(r.vegetarian)}</span><span class="v25-pill ${String(r.vegan).toLowerCase().includes("yes")?"good":""}">Vegan: ${esc(r.vegan)}</span><span class="v25-pill ${String(r.egg).toLowerCase().includes("yes")?"warn":"good"}">Egg: ${esc(r.egg)}</span></div><div class="actions" style="margin-top:10px"><button class="btn primary" onclick="go('restaurant/${r.id}')">Details</button><button class="btn" onclick="window.open('${r.maps||v25MapLink(r.name+" "+city)}','_blank')">Map</button></div></article>`).join("")||`<div class="empty">No saved places in this area yet.</div>`}</div></section>
+ ${recs.length?`<section class="section"><div class="section-head"><h2>Recommended Nearby</h2></div>${recs.map(r=>`<article class="card v25-store v25-rec"><span class="v25-recbadge">Researched addition</span><div class="v25-store-head"><div><b>${esc(r.name)}</b><small>${esc(r.why)}</small></div></div><div class="v25-foodmeta"><span class="v25-pill good">${esc(r.diet)}</span><span class="v25-pill good">${esc(r.egg)}</span></div><div class="actions" style="margin-top:10px"><button class="btn" onclick="window.open('${r.maps}','_blank')">Map & current hours</button></div></article>`).join("")}</section>`:""}`;
+};
+window.v25FoodFilter=function(){
+ const s=(document.querySelector("#v25FoodSearch")?.value||"").toLowerCase(), active=[...document.querySelectorAll("[data-v25diet].active")].map(x=>x.dataset.v25diet);
+ document.querySelectorAll("#v25FoodRows [data-food]").forEach(el=>{
+   let ok=!s||el.dataset.food.includes(s);
+   if(active.includes("vegan")) ok=ok&&el.dataset.vegan==="true";
+   if(active.includes("eggfree")) ok=ok&&el.dataset.eggfree==="true";
+   if(active.includes("cafe")) ok=ok&&el.dataset.cafe==="true";
+   el.style.display=ok?"":"none";
+ });
+};
+
+/* ---------- Today: populated and date-aware ---------- */
+function v25TripDay(country){
+ const days=FINAL_ITIN.filter(d=>country==="South Korea"?(d.date>="2026-10-21"&&d.date<="2026-10-25"):(d.date>="2026-10-07"&&d.date<="2026-10-21"));
+ const q=queryParams(), requested=q.get("date");
+ if(requested && days.some(d=>d.date===requested)) return [days,requested];
+ const now=new Date(), y=now.getFullYear(), m=String(now.getMonth()+1).padStart(2,"0"), dd=String(now.getDate()).padStart(2,"0"), today=`${y}-${m}-${dd}`;
+ if(days.some(d=>d.date===today)) return [days,today];
+ return [days,days[0].date];
+}
+window.renderSeoulToday23=function(){
+ const [days,selected]=v25TripDay("South Korea"), d=days.find(x=>x.date===selected), i=days.indexOf(d);
+ setHeader("Seoul · Today");
+ $("#view").innerHTML=`<div class="page-title"><div><div class="kicker">SEOUL · OCT 21–25</div><h1>${d.label} · ${esc(d.city)}</h1><p>${new Date()<new Date("2026-10-21T00:00:00")?"Next Seoul day":"Your Seoul day plan"}</p></div></div>
+ <div class="v25-daynav"><button class="btn" ${i===0?"disabled":""} onclick="go('seoul-today?date=${days[Math.max(0,i-1)].date}')">‹ Previous</button><button class="btn" ${i===days.length-1?"disabled":""} onclick="go('seoul-today?date=${days[Math.min(days.length-1,i+1)].date}')">Next ›</button></div>
+ <article class="card"><span class="kicker">${esc(d.status)}</span><h2>${esc(d.label)}</h2>${d.items.map((x,n)=>`<div class="final-check"><span><b>${esc(x[0])}</b><small>${esc(x[1])}</small></span></div>`).join("")}</article>
+ <div class="actions" style="margin-top:12px"><button class="btn" onclick="go('food?country=South%20Korea&city=Seoul')">Food nearby</button><button class="btn" onclick="go('shopping?country=South%20Korea&city=Seoul')">Shopping nearby</button><button class="btn" onclick="window.open('https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.city+" Seoul")}','_blank')">Map</button></div>`;
+};
+
+/* ---------- Local Guide: same structure, country-specific resources ---------- */
+const V25_GUIDE = {
+ "Japan":[
+  ["At a Glance","Currency, tipping, tax, power and emergency basics."],
+  ["Getting Around","IC cards, rail/subway basics, taxis and useful transport links."],
+  ["Convenience Stores","7-Eleven, FamilyMart and Lawson: drinks, snacks, ATMs and services."],
+  ["Attractions","Useful official tourism and map resources for the trip."],
+  ["Safety & Etiquette","Emergency/disaster resources and practical etiquette."],
+  ["Quick Reference","Language, maps, connectivity and trip shortcuts."]
+ ],
+ "South Korea":[
+  ["At a Glance","Currency, tipping, tax, power and emergency basics."],
+  ["Getting Around","Subway, buses, T-money, taxis and airport transport."],
+  ["Convenience Stores","CU, GS25 and 7-Eleven: drinks, snacks, ATMs and services."],
+  ["Attractions","Useful Seoul tourism and map resources."],
+  ["Safety & Etiquette","Emergency resources and practical etiquette."],
+  ["Quick Reference","Language, maps, connectivity and trip shortcuts."]
+ ]
+};
+const V25_GUIDE_LINKS = {
+ "Japan":{
+  "At a Glance":[["JNTO Japan Travel","https://www.japan.travel/en/"]],
+  "Getting Around":[["Japan Travel transport","https://www.japan.travel/en/plan/getting-around/"],["Google Maps","https://maps.google.com/"]],
+  "Convenience Stores":[["Open our convenience-store guide","#konbini"]],
+  "Attractions":[["JNTO destinations","https://www.japan.travel/en/destinations/"],["Google Maps","https://maps.google.com/"]],
+  "Safety & Etiquette":[["JNTO Safety","https://www.japan.travel/en/plan/emergencies/"],["JMA","https://www.jma.go.jp/jma/indexe.html"]],
+  "Quick Reference":[["Language Cheat Sheet","#language"],["Offline Maps","#offline-maps"]]
+ },
+ "South Korea":{
+  "At a Glance":[["Visit Seoul","https://english.visitseoul.net/"]],
+  "Getting Around":[["Visit Seoul transportation","https://english.visitseoul.net/transportation"],["Google Maps","https://maps.google.com/"]],
+  "Convenience Stores":[["Visit Seoul","https://english.visitseoul.net/"]],
+  "Attractions":[["Visit Seoul attractions","https://english.visitseoul.net/"],["Google Maps","https://maps.google.com/"]],
+  "Safety & Etiquette":[["Korea Tourism Organization","https://english.visitkorea.or.kr/"]],
+  "Quick Reference":[["Language Cheat Sheet","#language"],["Offline Maps","#offline-maps"]]
+ }
+};
+window.renderLocalGuide16=function(country){
+ const q=queryParams(), section=q.get("section")||"", root=`localguide?country=${encodeURIComponent(country)}`;
+ setHeader(`${country==="Japan"?"Japan":"Seoul"} · Local Guide`);
+ if(!section){
+  $("#view").innerHTML=`<div class="page-title"><div><h1>Local Guide</h1><p>Same useful structure in both countries, with country-specific information and resources.</p></div></div>
+  <img class="locked-feature15" src="${country==="Japan"?"japan-local-guide-locked.jpeg":"seoul-local-guide-locked.png"}" alt="${country} Local Guide">
+  <div class="v25-guidegrid">${V25_GUIDE[country].map(x=>`<button class="v25-guidecard" onclick="go('${root}&section=${encodeURIComponent(x[0])}')"><h3>${esc(x[0])}</h3><p>${esc(x[1])}</p></button>`).join("")}</div>`;
+  return;
+ }
+ const intro=V25_GUIDE[country].find(x=>x[0]===section)?.[1]||"Useful trip information.";
+ const links=V25_GUIDE_LINKS[country][section]||[];
+ let extra="";
+ if(country==="Japan"&&section==="Convenience Stores") extra=`<div class="card"><h3>Drinks & practical stops</h3><p>Water, Pocari Sweat/Aquarius-style hydration drinks, bottled teas, coffee, juices and sodas are easy to find. For Riya, check ingredients when a snack or prepared item may contain egg; do not assume a packaged item is vegetarian from appearance alone.</p><button class="btn primary" onclick="go('konbini')">Open full Japan convenience-store guide</button></div>`;
+ if(country==="South Korea"&&section==="Getting Around") extra=`<div class="card"><h3>On the ground</h3><p>Use subway/bus transit for most Seoul days; keep taxi as a practical late-evening or luggage option. Airport transfer information stays separate from the daily itinerary.</p></div>`;
+ $("#view").innerHTML=`${v25Crumbs([["Local Guide",root],[section,""]])}<div class="page-title"><div><h1>${esc(section)}</h1><p>${esc(intro)}</p></div></div>${extra}<div class="v25-links">${links.map(x=>x[1].startsWith("#")?`<a href="${x[1]}">${esc(x[0])} ›</a>`:`<a href="${x[1]}" target="_blank" rel="noopener">${esc(x[0])} ↗</a>`).join("")}</div>`;
+};
+
+/* Re-render once so the new back handler is attached immediately. */
+setTimeout(()=>render(),0);
+})();
+</script>
+
 </body></html>
