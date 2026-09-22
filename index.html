@@ -1622,6 +1622,7 @@ window.go = function(route){
   location.hash = "#"+route;
   if((location.hash.slice(1)||"home")===route) render();
 };
+go = window.go;
 function v25Back(){
   let target = v25Stack.pop();
   while(target === (location.hash.slice(1)||"home") && v25Stack.length) target=v25Stack.pop();
@@ -1641,7 +1642,7 @@ window.render = function(){
 
 /* ---------- helpers ---------- */
 function v25Country(q){
-  return q.get("country")==="South Korea" ? "South Korea" : "Japan";
+  return q.country==="South Korea" ? "South Korea" : "Japan";
 }
 function v25ShopRows(country){
   return DATA.shopping.filter(x=>country==="South Korea"?x.city==="Seoul":x.city!=="Seoul");
@@ -1657,7 +1658,17 @@ function v25MapLink(name){return "https://www.google.com/maps/search/?api=1&quer
 
 /* ---------- Shopping: Country → City → Area → Store ---------- */
 window.renderShopping=function(){
- const q=queryParams(), country=v25Country(q), city=q.city||"", area=q.area||"";
+ const q=queryParams();
+ if(!q.country && !q.city){
+   setHeader("Shopping & Finds");
+   $("#view").innerHTML=`<div class="page-title"><div><h1>Shopping & Finds</h1><p>Choose a country. Shopping remains organised by location, then store, then individual items.</p></div></div>
+   <div class="v25-locgrid">
+    ${v25Card("Japan","Osaka · Kyoto · Uji · Fuji · Tokyo","shopping?country=Japan")}
+    ${v25Card("South Korea","Seoul neighbourhoods","shopping?country=South%20Korea")}
+   </div>`;
+   return;
+ }
+ const country=v25Country(q), city=q.city||"", area=q.area||"";
  const rows=v25ShopRows(country);
  const root=`shopping?country=${encodeURIComponent(country)}`;
  setHeader(country==="Japan"?"Japan shopping":"Seoul shopping");
@@ -1694,7 +1705,17 @@ window.v25FilterStores=function(){
 
 /* ---------- Food: Country → City → Area → Place ---------- */
 window.renderFood=function(){
- const q=queryParams(), country=v25Country(q), city=q.city||"", area=q.area||"";
+ const q=queryParams();
+ if(!q.country && !q.city){
+   setHeader("Food");
+   $("#view").innerHTML=`<div class="page-title"><div><h1>Food</h1><p>Choose a country first. Places are then organised by city or neighbourhood instead of one long list.</p></div></div>
+   <div class="v25-locgrid">
+    ${v25Card("Japan","Osaka · Kyoto · Uji · Fuji · Tokyo","food?country=Japan")}
+    ${v25Card("South Korea","Seoul neighbourhoods","food?country=South%20Korea")}
+   </div>`;
+   return;
+ }
+ const country=v25Country(q), city=q.city||"", area=q.area||"";
  const all=DATA.restaurants.filter(r=>r.country===country);
  const root=`food?country=${encodeURIComponent(country)}`;
  setHeader(country==="Japan"?"Japan food":"Seoul food");
@@ -1731,7 +1752,7 @@ window.v25FoodFilter=function(){
 /* ---------- Today: populated and date-aware ---------- */
 function v25TripDay(country){
  const days=FINAL_ITIN.filter(d=>country==="South Korea"?(d.date>="2026-10-21"&&d.date<="2026-10-25"):(d.date>="2026-10-07"&&d.date<="2026-10-21"));
- const q=queryParams(), requested=q.get("date");
+ const q=queryParams(), requested=q.date;
  if(requested && days.some(d=>d.date===requested)) return [days,requested];
  const now=new Date(), y=now.getFullYear(), m=String(now.getMonth()+1).padStart(2,"0"), dd=String(now.getDate()).padStart(2,"0"), today=`${y}-${m}-${dd}`;
  if(days.some(d=>d.date===today)) return [days,today];
@@ -1784,7 +1805,7 @@ const V25_GUIDE_LINKS = {
  }
 };
 window.renderLocalGuide16=function(country){
- const q=queryParams(), section=q.get("section")||"", root=`localguide?country=${encodeURIComponent(country)}`;
+ const q=queryParams(), section=q.section||"", root=`localguide?country=${encodeURIComponent(country)}`;
  setHeader(`${country==="Japan"?"Japan":"Seoul"} · Local Guide`);
  if(!section){
   $("#view").innerHTML=`<div class="page-title"><div><h1>Local Guide</h1><p>Same useful structure in both countries, with country-specific information and resources.</p></div></div>
@@ -1801,6 +1822,162 @@ window.renderLocalGuide16=function(country){
 };
 
 /* Re-render once so the new back handler is attached immediately. */
+setTimeout(()=>render(),0);
+})();
+</script>
+
+
+<style id="v253-wallet">
+.v253-wallet-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.v253-wallet-stat{background:#fff;border-radius:18px;box-shadow:var(--shadow);padding:14px}
+.v253-wallet-stat small{display:block;color:#7c746f;margin-bottom:5px}.v253-wallet-stat b{font:700 21px Georgia,serif}
+.v253-cashgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v253-cash{background:#fff;border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.v253-cash b{display:block;font-size:21px;margin:5px 0}.v253-status{display:inline-block;border-radius:99px;padding:4px 7px;font-size:9px;text-transform:uppercase;letter-spacing:.06em;background:#eee8e2}
+.v253-status.actual{background:#e7f3e8}.v253-status.estimated{background:#fff0dc}.v253-status.scheduled{background:#e8eef7}
+.v253-form{display:grid;gap:9px}.v253-form label{font-size:11px;color:#746d68}.v253-form input,.v253-form select,.v253-form textarea{width:100%;box-sizing:border-box;border:1px solid #ddd2c7;background:#fff;border-radius:12px;padding:11px;font:inherit}
+.v253-chart{display:grid;gap:8px}.v253-barrow{display:grid;grid-template-columns:105px 1fr auto;gap:8px;align-items:center;font-size:11px}.v253-bar{height:10px;border-radius:99px;background:#eee8e2;overflow:hidden}.v253-bar>i{display:block;height:100%;background:currentColor;border-radius:99px}
+.v253-tx{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.v253-tx h3{margin:0 0 4px;font-size:15px}.v253-tx p{margin:0;color:#766e69;font-size:10px}.v253-tx strong{font-size:13px}
+.v253-tabs{display:flex;gap:7px;overflow:auto;margin:10px 0}.v253-tabs button{white-space:nowrap;border:1px solid #ddd2c7;background:#fff;border-radius:99px;padding:8px 10px}.v253-tabs button.active{background:#2f2b2a;color:#fff}
+.v253-note{font-size:10px;color:#7c746f;line-height:1.45}
+</style>
+<script id="v253-wallet">
+(function(){
+const WKEY="sakuraSeoul.wallet.v253";
+const FXKEY="sakuraSeoul.fx.v253";
+const CATS=["Hotels","Flights","Local Transportation","Attractions","Shopping","Food"];
+const emptyWallet=()=>({transactions:[],cash:{JPY:0,KRW:0},cashLoads:[],version:1});
+function loadW(){try{return Object.assign(emptyWallet(),JSON.parse(localStorage.getItem(WKEY)||"{}"))}catch(e){return emptyWallet()}}
+function saveW(w){localStorage.setItem(WKEY,JSON.stringify(w))}
+function money(n){return Number.isFinite(+n)?("C$"+(+n).toFixed(2)):"—"}
+function fxLoad(){try{return JSON.parse(localStorage.getItem(FXKEY)||"{}")}catch(e){return {}}}
+function txCad(t){return +(t.actualCad||t.estimatedCad||0)}
+function actualCad(t){return +(t.actualCad||0)}
+function estimatedCad(t){return t.actualCad?0:+(t.estimatedCad||0)}
+function escW(s){return esc(String(s??""))}
+function native(t){return `${t.currency==="CAD"?"C$":t.currency==="JPY"?"¥":t.currency==="KRW"?"₩":t.currency==="USD"?"US$":""}${Number(t.amount||0).toLocaleString()}`}
+function countryOf(t){return t.country||((t.currency==="KRW")?"South Korea":"Japan")}
+function nowDate(){return new Date().toISOString().slice(0,10)}
+function makeId(){return "tx_"+Date.now()+"_"+Math.random().toString(36).slice(2,7)}
+function routeCountry(q){return q.country==="Japan"||q.country==="South Korea"?q.country:"All"}
+
+window.renderWallet=function(){
+ const q=queryParams(), country=routeCountry(q), w=loadW(), tx=w.transactions.filter(t=>country==="All"||countryOf(t)===country);
+ const total=tx.reduce((s,t)=>s+txCad(t),0), actual=tx.reduce((s,t)=>s+actualCad(t),0), est=tx.reduce((s,t)=>s+estimatedCad(t),0);
+ setHeader(country==="All"?"Travel Wallet":country==="Japan"?"Japan Cash & Expenses":"Korea Cash & Expenses");
+ const sums=Object.fromEntries(CATS.map(c=>[c,tx.filter(t=>t.category===c).reduce((s,t)=>s+txCad(t),0)]));
+ const max=Math.max(1,...Object.values(sums));
+ $("#view").innerHTML=`
+ <div class="page-title"><div><h1>${country==="All"?"Travel Wallet":country==="Japan"?"Japan Cash & Expenses":"Korea Cash & Expenses"}</h1><p>One private wallet. CAD reporting, original currencies preserved, and cash balances kept separate from spending.</p></div></div>
+ <div class="v253-tabs">
+  <button class="${country==="All"?"active":""}" onclick="go('wallet')">Whole trip</button>
+  <button class="${country==="Japan"?"active":""}" onclick="go('wallet?country=Japan')">Japan</button>
+  <button class="${country==="South Korea"?"active":""}" onclick="go('wallet?country=South%20Korea')">Korea</button>
+ </div>
+ <div class="v253-wallet-summary">
+  <div class="v253-wallet-stat"><small>Total trip cost</small><b>${money(total)}</b></div>
+  <div class="v253-wallet-stat"><small>Reconciliation</small><b>${money(actual)}</b><small>actual + ${money(est)} estimated</small></div>
+ </div>
+ <div class="v253-cashgrid">
+  <div class="v253-cash"><small>Japan physical cash</small><b>¥${Number(w.cash.JPY||0).toLocaleString()}</b><button class="btn" onclick="go('wallet-cash?currency=JPY')">Add cash</button></div>
+  <div class="v253-cash"><small>Korea physical cash</small><b>₩${Number(w.cash.KRW||0).toLocaleString()}</b><button class="btn" onclick="go('wallet-cash?currency=KRW')">Add cash</button></div>
+ </div>
+ <section class="section"><div class="section-head"><h2>Spending by category</h2></div><div class="card v253-chart">
+ ${CATS.map(c=>`<div class="v253-barrow"><span>${c}</span><div class="v253-bar"><i style="width:${(sums[c]/max*100).toFixed(1)}%"></i></div><b>${money(sums[c])}</b></div>`).join("")}
+ </div><p class="v253-note">Chart updates automatically from the transactions below. Cash loads are transfers and are never counted as spending.</p></section>
+ <div class="actions"><button class="btn primary" onclick="go('wallet-edit')">+ Add expense</button><button class="btn" onclick="go('wallet-fx')">FX rates</button><button class="btn" onclick="v253Export()">Export backup</button><button class="btn" onclick="document.getElementById('v253Import').click()">Import backup</button><input id="v253Import" type="file" accept="application/json" style="display:none" onchange="v253ImportFile(this.files[0])"></div>
+ <section class="section"><div class="section-head"><h2>Transactions</h2></div>
+ ${tx.length?tx.sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(t=>`<article class="card v253-tx"><div><h3>${escW(t.note||t.category)}</h3><p>${escW(t.date||"")} · ${escW(t.category)} · ${escW(t.person||"Both")} · ${escW(t.payment||"")}</p><p>${escW(native(t))}${t.city?" · "+escW(t.city):""}</p><span class="v253-status ${t.actualCad?"actual":"estimated"}">${t.actualCad?"Actual":t.estimatedCad?"Estimated":"Native currency only"}</span></div><div style="text-align:right"><strong>${money(txCad(t))}</strong><div><button class="btn" onclick="go('wallet-edit?id=${encodeURIComponent(t.id)}')">Edit</button></div></div></article>`).join(""):`<div class="empty">No private wallet transactions on this device yet.</div>`}
+ </section>
+ <p class="v253-note">Wallet data is stored locally in this browser. It is not written to the GitHub repository. Export a backup before changing devices or clearing browser data.</p>`;
+};
+
+window.renderWalletEdit253=function(){
+ const q=queryParams(), w=loadW(), old=w.transactions.find(t=>t.id===q.id)||{}, fx=fxLoad();
+ setHeader(old.id?"Edit expense":"Add expense");
+ $("#view").innerHTML=`<div class="page-title"><div><h1>${old.id?"Edit Expense":"Add Expense"}</h1><p>Actual posted CAD overrides any estimate while preserving the original foreign amount.</p></div></div>
+ <form class="card v253-form" onsubmit="v253SaveTx(event,'${escW(old.id||"")}')">
+ <label>Date<input name="date" type="date" value="${escW(old.date||nowDate())}" required></label>
+ <label>Country<select name="country"><option ${old.country==="Japan"?"selected":""}>Japan</option><option ${old.country==="South Korea"?"selected":""}>South Korea</option></select></label>
+ <label>Category<select name="category">${CATS.map(c=>`<option ${old.category===c?"selected":""}>${c}</option>`).join("")}</select></label>
+ <label>Original currency<select name="currency" onchange="v253PreviewEstimate(this.form)">${["CAD","JPY","KRW","USD"].map(c=>`<option ${old.currency===c?"selected":""}>${c}</option>`).join("")}</select></label>
+ <label>Original amount<input name="amount" type="number" step="0.01" min="0" value="${escW(old.amount||"")}" oninput="v253PreviewEstimate(this.form)" required></label>
+ <label>Estimated CAD<input name="estimatedCad" type="number" step="0.01" min="0" value="${escW(old.estimatedCad||"")}"><small id="v253EstimateHint"></small></label>
+ <label>Actual posted CAD<input name="actualCad" type="number" step="0.01" min="0" value="${escW(old.actualCad||"")}" placeholder="Enter when card charge posts"></label>
+ <label>Payment method<select name="payment"><option ${old.payment==="Card"?"selected":""}>Card</option><option ${old.payment==="Cash"?"selected":""}>Cash</option><option ${old.payment==="Other"?"selected":""}>Other</option></select></label>
+ <label>Person/card owner<select name="person">${["Aakash","Riya","Both"].map(x=>`<option ${old.person===x?"selected":""}>${x}</option>`).join("")}</select></label>
+ <label>City<input name="city" value="${escW(old.city||"")}"></label>
+ <label>Note<textarea name="note">${escW(old.note||"")}</textarea></label>
+ <button class="btn primary" type="submit">Save expense</button>
+ ${old.id?`<button class="btn" type="button" onclick="v253DeleteTx('${escW(old.id)}')">Delete</button>`:""}
+ </form>`;
+ setTimeout(()=>v253PreviewEstimate(document.querySelector(".v253-form")),0);
+};
+window.v253PreviewEstimate=function(f){
+ const hint=document.querySelector("#v253EstimateHint"); if(!hint)return;
+ const cur=f.currency.value, amt=+f.amount.value||0, fx=fxLoad();
+ if(cur==="CAD"){f.estimatedCad.value=amt?amt.toFixed(2):"";hint.textContent="CAD transaction.";return}
+ const rate=fx.rates?.[cur];
+ if(rate&&amt){const cad=amt/rate; if(!f.estimatedCad.value) f.estimatedCad.value=cad.toFixed(2); hint.textContent=`Using cached/live rate: C$1 = ${rate} ${cur} (${fx.updated||"cached"})`;}
+ else hint.textContent="No FX rate cached. Keep the native amount or refresh FX rates.";
+};
+window.v253SaveTx=function(e,id){
+ e.preventDefault(); const f=e.target, w=loadW(), old=w.transactions.find(t=>t.id===id);
+ const t={id:id||makeId(),date:f.date.value,country:f.country.value,category:f.category.value,currency:f.currency.value,amount:+f.amount.value||0,estimatedCad:+f.estimatedCad.value||0,actualCad:+f.actualCad.value||0,payment:f.payment.value,person:f.person.value,city:f.city.value.trim(),note:f.note.value.trim()};
+ // Cash purchase changes physical cash by native amount; edits reverse old cash impact first.
+ if(old&&old.payment==="Cash"&&(old.currency==="JPY"||old.currency==="KRW")) w.cash[old.currency]=(+w.cash[old.currency]||0)+(+old.amount||0);
+ if(t.payment==="Cash"&&(t.currency==="JPY"||t.currency==="KRW")) w.cash[t.currency]=(+w.cash[t.currency]||0)-t.amount;
+ const i=w.transactions.findIndex(x=>x.id===t.id); if(i>=0)w.transactions[i]=t;else w.transactions.push(t); saveW(w); v25Back();
+};
+window.v253DeleteTx=function(id){
+ const w=loadW(), old=w.transactions.find(t=>t.id===id);
+ if(old&&old.payment==="Cash"&&(old.currency==="JPY"||old.currency==="KRW"))w.cash[old.currency]=(+w.cash[old.currency]||0)+(+old.amount||0);
+ w.transactions=w.transactions.filter(t=>t.id!==id);saveW(w);v25Back();
+};
+
+window.renderWalletCash253=function(){
+ const q=queryParams(), cur=q.currency==="KRW"?"KRW":"JPY"; setHeader("Add Cash");
+ $("#view").innerHTML=`<div class="page-title"><div><h1>Add ${cur==="JPY"?"Japan ¥":"Korea ₩"} Cash</h1><p>A cash load changes physical cash only. It is not spending.</p></div></div>
+ <form class="card v253-form" onsubmit="v253AddCash(event,'${cur}')">
+ <label>Amount (${cur})<input name="amount" type="number" step="1" min="1" required></label>
+ <label>CAD paid (optional)<input name="cad" type="number" step="0.01" min="0"></label>
+ <label>Date<input name="date" type="date" value="${nowDate()}"></label>
+ <label>Source / note<input name="note" placeholder="ATM, exchange, cash carried…"></label>
+ <button class="btn primary" type="submit">Add to physical cash</button></form>`;
+};
+window.v253AddCash=function(e,cur){e.preventDefault();const f=e.target,w=loadW(),amt=+f.amount.value||0;w.cash[cur]=(+w.cash[cur]||0)+amt;w.cashLoads.push({id:"cash_"+Date.now(),currency:cur,amount:amt,cad:+f.cad.value||0,date:f.date.value,note:f.note.value});saveW(w);v25Back()};
+
+window.renderWalletFx253=function(){
+ const fx=fxLoad();setHeader("FX rates");
+ $("#view").innerHTML=`<div class="page-title"><div><h1>FX Rates</h1><p>Rates are used only for estimates. Your wallet transactions are never sent to the FX service.</p></div></div>
+ <div class="card"><h3>CAD reference</h3><p>JPY: <b>${fx.rates?.JPY||"—"}</b><br>KRW: <b>${fx.rates?.KRW||"—"}</b><br>USD: <b>${fx.rates?.USD||"—"}</b></p><p class="v253-note">Updated: ${escW(fx.updated||"No cached rate yet")}</p><button class="btn primary" onclick="v253RefreshFx(this)">Refresh rates</button></div>`;
+};
+window.v253RefreshFx=async function(btn){
+ const old=btn.textContent;btn.textContent="Refreshing…";btn.disabled=true;
+ try{
+  const r=await fetch("https://api.frankfurter.app/latest?from=CAD&to=JPY,KRW,USD");
+  if(!r.ok)throw new Error("FX request failed");
+  const j=await r.json();localStorage.setItem(FXKEY,JSON.stringify({rates:j.rates,updated:j.date||new Date().toISOString(),source:"Frankfurter"}));renderWalletFx253();
+ }catch(e){btn.textContent="Could not refresh";setTimeout(()=>{btn.textContent=old;btn.disabled=false},1600)}
+};
+window.v253Export=function(){
+ const blob=new Blob([JSON.stringify({wallet:loadW(),fx:fxLoad(),exportedAt:new Date().toISOString()},null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="sakura-seoul-wallet-backup.json";a.click();URL.revokeObjectURL(a.href);
+};
+window.v253ImportFile=function(file){
+ if(!file)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(!j.wallet)throw 0;saveW(j.wallet);if(j.fx)localStorage.setItem(FXKEY,JSON.stringify(j.fx));renderWallet()}catch(e){alert("This does not look like a valid wallet backup.")}};r.readAsText(file);
+};
+
+/* Extend existing renderer without changing any other route/page. */
+const prevRender253=window.render;
+window.render=function(){
+ const route=location.hash.slice(1)||"home", base=route.split("?")[0];
+ if(base==="wallet"){renderWallet();return}
+ if(base==="wallet-edit"){renderWalletEdit253();return}
+ if(base==="wallet-cash"){renderWalletCash253();return}
+ if(base==="wallet-fx"){renderWalletFx253();return}
+ prevRender253();
+};
+render=window.render;
 setTimeout(()=>render(),0);
 })();
 </script>

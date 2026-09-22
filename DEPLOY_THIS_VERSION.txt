@@ -1,0 +1,24 @@
+THE SAKURA & SEOUL JOURNAL — CONSOLIDATED VERSION
+
+Upload the contents of this folder to the same GitHub Pages location.
+index.html is the consolidated app file.
+
+Included:
+- Existing approved V24 homepage/tile assets preserved
+- Japan locked Local Guide image
+- Seoul matching Local Guide image
+- Food: country > city/area > place
+- Shopping: country > city/area > store > items
+- Saved vs recommended nearby separation
+- Seoul Today populated/date-aware
+- Previous-page Back navigation
+- Master private Travel Wallet
+- Japan/Korea wallet filtered views
+- CAD actual vs estimated reconciliation
+- JPY/KRW physical cash starting at zero
+- Add Cash as transfer, not spending
+- Six-category auto-updating spending breakdown
+- Live/cached FX estimates
+- Wallet export/import backup
+
+No personal wallet transactions are embedded in the public files.
